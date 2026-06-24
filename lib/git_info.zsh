@@ -5,8 +5,8 @@
 #   * What's the branch name? — one `git symbolic-ref` call, reads HEAD only.
 #
 # Slow half (asynchronous):
-#   * How many staged and untracked files? — `git status --porcelain` walks
-#     the index AND the working tree, which can take 100ms+ in large repos.
+#   * How many staged, untracked, and modified files? — `git status --porcelain`
+#     walks the index AND the working tree, which can take 100ms+ in large repos.
 #     We spawn it in a backgrounded subshell and let `zle -F` notify us when
 #     the result is ready, then call `zle reset-prompt` to redraw.
 #
@@ -57,30 +57,40 @@ _tinyzsh_render_git_segment_text() {
   local cached=${_tinyzsh_git_status_cache_by_directory[$PWD]:-}
 
   if [[ -n $cached ]]; then
-    local staged_count=${cached% *}
-    local untracked_count=${cached#* }
+    local parts=(${(s: :)cached})
+    local staged_count=${parts[1]:-0}
+    local untracked_count=${parts[2]:-0}
+    local modified_count=${parts[3]:-0}
     (( untracked_count > 0 )) && content+=" ?${untracked_count}"
     (( staged_count    > 0 )) && content+=" +${staged_count}"
+    (( modified_count  > 0 )) && content+=" !${modified_count}"
   fi
 
   print -rn -- "$content"
 }
 
 
-# Count staged and untracked files for $1. Designed to run in a subshell.
-# Output (always one line):  "<staged_count> <untracked_count>"
+# Count staged, untracked, and modified files for $1. Designed to run in a
+# subshell.
+# Output (always one line):  "<staged_count> <untracked_count> <modified_count>"
+#
+# In `git status --porcelain` each tracked entry is "XY path", where X is the
+# index (staged) status and Y is the working-tree status. A file can show up in
+# more than one bucket at once (e.g. "MM" is both staged and modified), so the
+# columns are counted independently rather than as mutually exclusive cases.
 _tinyzsh_compute_git_status_counts_for_directory() {
   local directory=$1
-  builtin cd -q -- "$directory" 2>/dev/null || { print -r -- "0 0"; return }
+  builtin cd -q -- "$directory" 2>/dev/null || { print -r -- "0 0 0"; return }
 
   local porcelain
   porcelain=$(git status --porcelain=v1 2>/dev/null) || {
-    print -r -- "0 0"; return
+    print -r -- "0 0 0"; return
   }
 
   local staged_count=0
   local untracked_count=0
-  local line index_status
+  local modified_count=0
+  local line index_status worktree_status
 
   while IFS= read -r line; do
     [[ -z $line ]] && continue
@@ -88,11 +98,13 @@ _tinyzsh_compute_git_status_counts_for_directory() {
       (( untracked_count++ ))
     else
       index_status=${line:0:1}
-      [[ $index_status != ' ' ]] && (( staged_count++ ))
+      worktree_status=${line:1:1}
+      [[ $index_status    != ' ' ]] && (( staged_count++ ))
+      [[ $worktree_status != ' ' ]] && (( modified_count++ ))
     fi
   done <<< "$porcelain"
 
-  print -r -- "$staged_count $untracked_count"
+  print -r -- "$staged_count $untracked_count $modified_count"
 }
 
 
