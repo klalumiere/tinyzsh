@@ -26,7 +26,8 @@ typeset -g TINYZSH_DURATION_FOREGROUND=185
 typeset -g TINYZSH_TIME_BACKGROUND=23
 typeset -g TINYZSH_TIME_FOREGROUND=87
 typeset -g TINYZSH_DOT_FILL_FOREGROUND=240
-typeset -g TINYZSH_INPUT_ARROW_FOREGROUND=82
+typeset -g TINYZSH_INPUT_ARROW_FOREGROUND=82        # last command succeeded (exit 0)
+typeset -g TINYZSH_INPUT_ARROW_ERROR_FOREGROUND=196 # last command failed (non-zero exit)
 
 
 # Append one left-side segment to the caller's $REPLY (dynamic scope).

@@ -24,8 +24,10 @@ add-zsh-hook preexec _tinyzsh_remember_command_start_time
 # The top line is rebuilt via command substitution on every prompt render
 # (including after zle reset-prompt), so the clock and the dot-fill always
 # match the current terminal width.
+# %(?.A.B) is a zsh prompt conditional: A when the last command's exit status
+# was 0, B otherwise — so the arrow is green on success and red on error.
 PROMPT='$(_tinyzsh_render_top_prompt_line)
-%F{$TINYZSH_INPUT_ARROW_FOREGROUND}›%f '
+%(?.%F{$TINYZSH_INPUT_ARROW_FOREGROUND}.%F{$TINYZSH_INPUT_ARROW_ERROR_FOREGROUND})›%f '
 PROMPT2='%F{$TINYZSH_INPUT_ARROW_FOREGROUND}›%f '
 RPROMPT=''
 
