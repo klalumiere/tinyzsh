@@ -37,5 +37,5 @@ RPROMPT=''
 _tinyzsh_refresh_state_before_each_prompt() {
   _tinyzsh_calculate_last_command_duration
   _tinyzsh_refresh_cached_git_branch_for_current_directory
-  _tinyzsh_kick_off_async_git_status_update_if_in_repo
+  _tinyzsh_kick_off_async_git_jobs_if_in_repo
 }

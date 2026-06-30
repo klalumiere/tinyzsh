@@ -16,6 +16,12 @@ typeset -g TINYZSH_TRANSPARENT_BACKGROUND='transparent'
 # Character that fills the empty space between the two sides of the prompt.
 typeset -g TINYZSH_FILL_CHARACTER='.'
 
+# Out-of-sync-with-origin signs shown next to the branch name. Plain Unicode
+# arrows (no patched font needed). Nothing is shown when the branch is in sync,
+# or when origin can't be reached (e.g. offline).
+typeset -g TINYZSH_GIT_AHEAD_SIGN=$'⇡'   # ⇡ local commits origin doesn't have
+typeset -g TINYZSH_GIT_BEHIND_SIGN=$'⇣'  # ⇣ origin has commits we don't have
+
 # 256-colour palette. Tweak these to taste.
 typeset -g TINYZSH_PATH_BACKGROUND=23
 typeset -g TINYZSH_PATH_FOREGROUND=87
