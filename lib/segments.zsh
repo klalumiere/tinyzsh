@@ -17,10 +17,11 @@ typeset -g TINYZSH_TRANSPARENT_BACKGROUND='transparent'
 typeset -g TINYZSH_FILL_CHARACTER='.'
 
 # Out-of-sync-with-origin signs shown next to the branch name. Plain Unicode
-# arrows (no patched font needed). Nothing is shown when the branch is in sync,
-# or when origin can't be reached (e.g. offline).
-typeset -g TINYZSH_GIT_AHEAD_SIGN=$'⇡'   # ⇡ local commits origin doesn't have
-typeset -g TINYZSH_GIT_BEHIND_SIGN=$'⇣'  # ⇣ origin has commits we don't have
+# arrows (no patched font needed). Reflect the branch's position against the
+# remote-tracking ref as of the last `git fetch`; nothing is shown when in sync.
+typeset -g TINYZSH_GIT_AHEAD_SIGN=$'⇡'    # ⇡ local commits origin doesn't have
+typeset -g TINYZSH_GIT_BEHIND_SIGN=$'⇣'   # ⇣ origin has commits we don't have
+typeset -g TINYZSH_GIT_DIVERGED_SIGN=$'⇕' # ⇕ both ahead and behind
 
 # 256-colour palette. Tweak these to taste.
 typeset -g TINYZSH_PATH_BACKGROUND=23
